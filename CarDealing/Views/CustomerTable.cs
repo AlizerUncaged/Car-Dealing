@@ -109,5 +109,17 @@ namespace CarDealing.Views
 
             form1.SetCustomersNotifications(false, selectedItems.ToArray());
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            // simulate
+            var selectedItems = CustomersTable.SelectedRows.Cast<DataGridViewRow>()
+                .Select(y => y.DataBoundItem as Customer);
+
+            foreach (var customer in selectedItems)
+            {
+                new Simulator(form1, customer).Show();
+            }
+        }
     }
 }

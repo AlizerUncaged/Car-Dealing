@@ -16,7 +16,14 @@ namespace CarDealing
     public partial class Form1 : Form
     {
         private List<Customer> _customers
-            = new List<Customer>();
+            = new List<Customer>()
+            {
+                new Customer(){
+                    Email = "sample@gmail.com",
+                    Username = "Julia",
+                    IsSubscribed = true
+                }
+            };
 
         private List<Car> _cars
             = new List<Car>();
@@ -30,6 +37,10 @@ namespace CarDealing
         /// This allows us to make sure the data is the same per CustomerTable form.
         /// </summary>
         public event EventHandler CustomersChanged;
+
+        public event EventHandler<Customer> SpecificCustomerChanged;
+
+        public event EventHandler<string> Notifications;
 
         #region Customer
         public void AddCustomer(params Customer[] customers)
@@ -47,7 +58,10 @@ namespace CarDealing
         public void SetCustomersNotifications(bool subscribe, params Customer[] customers)
         {
             foreach (var i in customers)
+            {
                 i.IsSubscribed = subscribe;
+                SpecificCustomerChanged?.Invoke(this, i);
+            }
 
             CustomersChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -65,6 +79,7 @@ namespace CarDealing
         {
             Environment.Exit(Environment.ExitCode);
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
             // add car
@@ -75,13 +90,16 @@ namespace CarDealing
             {
                 _cars.Add(carDialog.Car);
 
-                MessageBox.Show("Car Added!",
-                    $"Model {carDialog.Car.Model} Added.",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                Notifications?.Invoke(this, $"Good morning! <username>, we've got a brand " +
+                    $"new car you might want to check out!{Environment.NewLine}" +
+                    $"Model: {carDialog.Car.Model} at {carDialog.Car.Price} Pesos!{Environment.NewLine}" +
+                    $"Year: {carDialog.Car.Year}{Environment.NewLine}" +
+                    $"Mileage: {carDialog.Car.Mileage}");
             }
 
         }
+
+
         #endregion
 
     }
